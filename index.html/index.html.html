@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJ esencias - Boutique & Calculadora Glam</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cormorant Garamond & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf JS for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bistre: {
+                            DEFAULT: '#2B1E16',
+                            light: '#3D2B1F',
+                            dark: '#1C130D',
+                        },
+                        gold: {
+                            100: '#FAF3DD',
+                            200: '#F3E5AB',
+                            400: '#E6CA65',
+                            500: '#D4AF37',
+                            600: '#C5A059',
+                            700: '#A38038',
+                        },
+                        beige: {
+                            50: '#FAF8F5',
+                            100: '#F5F0EB',
+                            200: '#EAE0D5',
+                            300: '#DDD0C0',
+                        },
+                        bhd: {
+                            green: '#005A36',
+                            header: '#04422A'
+                        },
+                        banreservas: {
+                            blue: '#00539B',
+                            header: '#003B70'
+                        },
+                        popular: {
+                            blue: '#002F6C',
+                            header: '#001E47'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FAF8F5;
+            color: #2B1E16;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .font-serif-title {
+            font-family: 'Cormorant Garamond', serif;
+        }
+        .gold-gradient-bg {
+            background: linear-gradient(135deg, #D4AF37 0%, #E6CA65 50%, #C5A059 100%);
+        }
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #C5A059 0%, #D4AF37 50%, #A38038 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gold-border-glow {
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 20px -2px rgba(212, 175, 55, 0.15);
+        }
+        .luxury-card {
+            background: #FFFFFF;
+            border: 1px solid #EAE0D5;
+            transition: all 0.3s ease;
+        }
+        .luxury-card:hover {
+            border-color: #D4AF37;
+            box-shadow: 0 10px 25px -5px rgba(212, 175, 55, 0.12);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F5F0EB;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C5A059;
+            border-radius: 3px;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-beige-200 sticky top-0 z-40 shadow-sm no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('calculator')">
+                <div class="w-10 h-10 rounded-full gold-gradient-bg flex items-center justify-center text-white font-serif-title font-bold text-xl shadow-md">
+                    AJ
+                </div>
+                <div>
+                    <h1 class="text-2xl font-serif-title font-bold tracking-wider gold-gradient-text leading-none">AJ esencias</h1>
+                    <p class="text-xs text-bistre/60 tracking-widest uppercase">Boutique & Perfumería Glam</p>
+                </div>
+            </div>
+
+            <!-- Lock / Admin Session Status -->
+            <div class="flex items-center space-x-2">
+                <button onclick="checkProtectedTab('payments')" class="px-3 py-1.5 text-xs rounded-full bg-gold-100/70 border border-gold-500/50 text-gold-700 hover:bg-gold-200 font-semibold transition flex items-center space-x-1.5">
+                    <i class="fas fa-lock text-gold-600"></i>
+                    <span>Formas de Pago (Adm.)</span>
+                </button>
+                <button id="pinStatusBtn" onclick="openPinModal()" class="px-3 py-1.5 text-xs rounded-full border border-gold-500/40 text-bistre hover:bg-beige-100 transition flex items-center space-x-2">
+                    <i id="pinLockIcon" class="fas fa-lock text-gold-600"></i>
+                    <span id="pinLockText">Sección Protegida</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <nav class="bg-beige-100/60 border-t border-beige-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 flex overflow-x-auto whitespace-nowrap scrollbar-none py-1 gap-2 text-sm">
+                <button onclick="switchTab('calculator')" id="tab-calculator" class="nav-tab active-tab px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 bg-white text-bistre shadow-sm border border-gold-500/30">
+                    <i class="fas fa-calculator text-gold-600"></i> Cotizador & Pedidos
+                </button>
+                <button onclick="checkProtectedTab('payments')" id="tab-payments" class="nav-tab px-4 py-2 rounded-lg font-medium text-bistre/70 hover:text-bistre hover:bg-white/50 transition flex items-center gap-2">
+                    <i class="fas fa-credit-card text-gold-600"></i> Formas de Pago <i class="fas fa-lock text-[10px] text-gold-600"></i>
+                </button>
+                <button onclick="checkProtectedTab('credit')" id="tab-admin" class="nav-tab px-4 py-2 rounded-lg font-medium text-bistre/70 hover:text-bistre hover:bg-white/50 transition flex items-center gap-2">
+                    <i class="fas fa-user-shield text-gold-600"></i> Adm.
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- SECTION 1: CALCULATOR / CATALOG -->
+        <section id="section-calculator" class="tab-content block">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Product Selector (Left Column) -->
+                <div class="lg:col-span-7 xl:col-span-8 space-y-6">
+                    
+                    <!-- Search & Filter Banner -->
+                    <div class="luxury-card p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 border-gold-500/20">
+                        <div class="relative w-full">
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gold-600/60"></i>
+                            <input type="text" id="productSearch" oninput="filterProducts()" placeholder="Buscar producto (ej: crema, bath, eos, biotin...)" 
+                                class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-beige-200 bg-beige-50/50 text-bistre focus:outline-none focus:border-gold-500 text-sm">
+                        </div>
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                            <button onclick="clearSelection()" class="text-xs px-3 py-2 text-bistre/60 hover:text-red-600 hover:bg-red-50 rounded-lg transition border border-beige-200 whitespace-nowrap">
+                                <i class="fas fa-trash-can mr-1"></i> Limpiar Elección
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Category Quick Links -->
+                    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none" id="categoryQuickLinks">
+                        <!-- Dynamic Categories Pill Buttons -->
+                    </div>
+
+                    <!-- Categorized Products Grid -->
+                    <div id="productsContainer" class="space-y-8">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- Live Summary Drawer (Right Column) -->
+                <div class="lg:col-span-5 xl:col-span-4 no-print">
+                    <div class="sticky top-28 space-y-6">
+                        <div class="luxury-card rounded-2xl p-6 gold-border-glow bg-white relative overflow-hidden">
+                            <div class="absolute top-0 left-0 right-0 h-1.5 gold-gradient-bg"></div>
+                            
+                            <div class="flex items-center justify-between mb-4 border-b border-beige-200 pb-3">
+                                <h3 class="font-serif-title text-2xl font-bold text-bistre flex items-center gap-2">
+                                    <i class="fas fa-receipt text-gold-600"></i> Resumen de Cotización
+                                </h3>
+                                <span id="cartCountBadge" class="bg-gold-100 text-gold-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-gold-400/40">
+                                    0 ítems
+                                </span>
+                            </div>
+
+                            <!-- Selected Items List -->
+                            <div id="cartItemList" class="max-h-60 overflow-y-auto space-y-2 pr-1 mb-4 text-sm divide-y divide-beige-100">
+                                <p class="text-center text-bistre/50 py-8 italic text-xs">Aún no has seleccionado productos.</p>
+                            </div>
+
+                            <!-- Customer Options & Details Form -->
+                            <div class="space-y-3 pt-3 border-t border-beige-200 text-xs">
+                                <!-- Personal Message Addon ($25) -->
+                                <div class="bg-beige-50 p-3 rounded-xl border border-beige-200 space-y-2">
+                                    <label class="flex items-center justify-between cursor-pointer">
+                                        <span class="font-medium text-bistre flex items-center gap-2">
+                                            <i class="fas fa-envelope-open-text text-gold-600"></i> Mensaje personalizado (+RD$25)
+                                        </span>
+                                        <input type="checkbox" id="chkPersonalMessage" onchange="calculateTotal()" class="w-4 h-4 accent-gold-600 rounded">
+                                    </label>
+                                    <input type="text" id="txtPersonalMessage" placeholder="Escribe el mensaje para la dedicatoria..." 
+                                        class="w-full p-2 text-xs border border-beige-200 rounded-lg bg-white hidden focus:outline-none focus:border-gold-500">
+                                </div>
+
+                                <!-- Shipping Note & GPS Location Link -->
+                                <div class="bg-beige-50 p-3 rounded-xl border border-beige-200 space-y-2">
+                                    <div class="flex items-center justify-between text-bistre/80 font-medium">
+                                        <span><i class="fas fa-truck text-gold-600 mr-1"></i> Envío:</span>
+                                        <span class="text-gold-700 font-semibold bg-gold-100/60 px-2 py-0.5 rounded text-[11px]">Se cotiza por separado</span>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <label class="block text-[11px] text-bistre/70">Link de Ubicación (Tiempo Real):</label>
+                                        <div class="flex gap-2">
+                                            <input type="text" id="txtLocationLink" placeholder="Ej: https://maps.google.com/..." 
+                                                class="w-full p-2 border border-beige-200 rounded-lg text-xs bg-white focus:outline-none focus:border-gold-500">
+                                            <button onclick="getGPSLocation()" title="Usar mi ubicación GPS actual" class="px-3 bg-beige-200 hover:bg-gold-200 text-bistre rounded-lg transition flex items-center justify-center">
+                                                <i class="fas fa-location-dot text-gold-700"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Client Name & Phone -->
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-[11px] text-bistre/70 font-medium mb-1">Nombre Cliente:</label>
+                                        <input type="text" id="quoteClientName" placeholder="Nombre completo" class="w-full p-2 border border-beige-200 rounded-lg bg-white text-xs focus:outline-none focus:border-gold-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] text-bistre/70 font-medium mb-1">Teléfono Cliente:</label>
+                                        <input type="tel" id="quoteClientPhone" placeholder="809-000-0000" class="w-full p-2 border border-beige-200 rounded-lg bg-white text-xs focus:outline-none focus:border-gold-500">
+                                    </div>
+                                </div>
+
+                                <!-- Partial Payment / Abono Option -->
+                                <div class="bg-beige-50 p-3 rounded-xl border border-beige-200 space-y-2">
+                                    <label class="flex items-center justify-between cursor-pointer">
+                                        <span class="font-medium text-bistre flex items-center gap-2">
+                                            <i class="fas fa-hand-holding-dollar text-gold-600"></i> ¿Es un Pago Parcial / Abono?
+                                        </span>
+                                        <input type="checkbox" id="chkIsAbono" onchange="toggleAbonoInput()" class="w-4 h-4 accent-gold-600 rounded">
+                                    </label>
+                                    <div id="abonoContainer" class="hidden space-y-2 pt-1 border-t border-beige-200">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-bistre/70">Monto Abonado:</span>
+                                            <input type="number" id="numAbonoAmount" oninput="calculateTotal()" placeholder="0.00" class="w-28 p-1.5 border border-beige-200 rounded-lg bg-white text-right text-xs font-bold text-green-700 focus:outline-none focus:border-gold-500">
+                                        </div>
+                                        <div class="flex justify-between items-center text-xs text-red-700 font-semibold">
+                                            <span>Resta Pendiente:</span>
+                                            <span id="lblPendingBalance">RD$ 0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Totals Box -->
+                            <div class="my-4 pt-3 border-t border-beige-200 space-y-1.5">
+                                <div class="flex justify-between text-xs text-bistre/70">
+                                    <span>Subtotal Productos:</span>
+                                    <span id="lblSubtotal">RD$ 0.00</span>
+                                </div>
+                                <div class="flex justify-between text-xs text-bistre/70">
+                                    <span>Mensaje Especial:</span>
+                                    <span id="lblAddonTotal">RD$ 0.00</span>
+                                </div>
+                                <div class="flex justify-between text-lg font-serif-title font-bold text-bistre pt-2 border-t border-beige-200">
+                                    <span>Costo Total:</span>
+                                    <span id="lblGrandTotal" class="text-gold-700">RD$ 0.00</span>
+                                </div>
+                            </div>
+
+                            <!-- Main Action Button "Listo" -->
+                            <button onclick="generateFinalQuote()" class="w-full py-3 rounded-xl gold-gradient-bg text-white font-bold text-sm tracking-wide shadow-md hover:brightness-105 transition flex items-center justify-center gap-2">
+                                <i class="fas fa-check-circle"></i> ¡LISTO! GENERAR COTIZACIÓN
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 2: ADMIN (PROTECTED GROUPED SECTION "Adm.") -->
+        <section id="section-admin" class="tab-content hidden space-y-6">
+            <div class="luxury-card rounded-2xl p-6 shadow-sm border-gold-500/20 space-y-6">
+                <!-- Admin Section Navigation Bar -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-beige-200">
+                    <div>
+                        <h2 class="font-serif-title text-3xl font-bold text-bistre flex items-center gap-2">
+                            <i class="fas fa-user-shield text-gold-600"></i> Administración (Adm.)
+                        </h2>
+                        <p class="text-xs text-bistre/60">Gestión privada, crédito, citas, formas de pago, inventario y catálogo de precios</p>
+                    </div>
+                    
+                    <!-- Sub-tabs for Adm section -->
+                    <div class="flex gap-1.5 flex-wrap bg-beige-100 p-1.5 rounded-xl border border-beige-200 text-xs font-medium w-full md:w-auto">
+                        <button onclick="switchAdminSubTab('credit')" id="subtab-credit" class="admin-subtab px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 bg-white text-bistre font-semibold shadow-xs">
+                            <i class="fas fa-book-bookmark text-gold-600"></i> Clientes Crédito
+                        </button>
+                        <button onclick="switchAdminSubTab('payments')" id="subtab-payments" class="admin-subtab px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-bistre/70 hover:text-bistre">
+                            <i class="fas fa-credit-card text-gold-600"></i> Formas de Pago
+                        </button>
+                        <button onclick="switchAdminSubTab('appointments')" id="subtab-appointments" class="admin-subtab px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-bistre/70 hover:text-bistre">
+                            <i class="fas fa-calendar-check text-gold-600"></i> Citas
+                        </button>
+                        <button onclick="switchAdminSubTab('inventory')" id="subtab-inventory" class="admin-subtab px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-bistre/70 hover:text-bistre">
+                            <i class="fas fa-boxes-packing text-gold-600"></i> Diario & Inventario
+                        </button>
+                        <button onclick="switchAdminSubTab('prices')" id="subtab-prices" class="admin-subtab px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-bistre/70 hover:text-bistre">
+                            <i class="fas fa-tags text-gold-600"></i> Editar Precios
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SUB-CONTENT 1: CLIENTES A CRÉDITO -->
+                <div id="admin-subcontent-credit" class="admin-subcontent space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-serif-title text-xl font-bold text-bistre">Catálogo de Clientes a Crédito</h3>
+                        <button onclick="openNewCreditModal()" class="px-4 py-2 rounded-xl gold-gradient-bg text-white text-xs font-bold shadow hover:brightness-105 transition flex items-center gap-2">
+                            <i class="fas fa-plus"></i> Nuevo Cliente a Crédito
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-bistre">
+                            <thead class="bg-beige-100 text-bistre font-semibold uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-3 rounded-l-lg">Cliente</th>
+                                    <th class="p-3">Teléfono</th>
+                                    <th class="p-3">Monto Original</th>
+                                    <th class="p-3">Total Abonado</th>
+                                    <th class="p-3">Deuda Restante</th>
+                                    <th class="p-3">Estado</th>
+                                    <th class="p-3 rounded-r-lg text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="creditClientsTable" class="divide-y divide-beige-100">
+                                <!-- Populated via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUB-CONTENT 2: FORMAS DE PAGO & BANCOS (BLOQUEADO EN ADM) -->
+                <div id="admin-subcontent-payments" class="admin-subcontent hidden space-y-6">
+                    <div class="text-center max-w-2xl mx-auto space-y-2">
+                        <span class="text-xs font-bold uppercase tracking-widest text-gold-700 bg-gold-100 px-3 py-1 rounded-full border border-gold-400/30">
+                            Gestión Protegida
+                        </span>
+                        <h2 class="font-serif-title text-3xl font-bold text-bistre">MÉTODOS Y FORMAS DE PAGO</h2>
+                        <p class="text-xs text-bistre/70">Cuentas oficiales registradas para cobros, transferencias y pagos con tarjeta.</p>
+                    </div>
+
+                    <!-- Bank Accounts Cards Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <!-- BHD Card -->
+                        <div class="bg-white rounded-2xl overflow-hidden border border-emerald-200 shadow-md hover:shadow-xl transition flex flex-col justify-between">
+                            <div>
+                                <!-- Card Banner -->
+                                <div class="bg-emerald-800 p-4 text-white flex justify-between items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 rounded-full bg-white text-emerald-900 flex items-center justify-center font-bold text-sm">
+                                            B
+                                        </div>
+                                        <span class="font-bold tracking-wider text-base">BHD</span>
+                                    </div>
+                                    <i class="fas fa-sack-dollar text-xl opacity-80"></i>
+                                </div>
+                                <!-- Account Details -->
+                                <div class="p-6 text-center space-y-4">
+                                    <div class="bg-beige-50 p-4 rounded-xl border border-beige-200">
+                                        <span class="block text-bistre/60 text-xs uppercase font-bold tracking-wider mb-1">NÚMERO DE CUENTA:</span>
+                                        <span id="bhdAccNum" class="text-xl font-extrabold text-emerald-900 font-mono tracking-wider">40404050010</span>
+                                        <button onclick="copyToClipboard('40404050010', 'Número de cuenta BHD copiado')" class="block mx-auto mt-2 text-xs text-emerald-700 hover:text-emerald-900 font-semibold underline">
+                                            <i class="fas fa-copy mr-1"></i> Copiar Cuenta
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-beige-50 border-t border-beige-200 text-center">
+                                <button onclick="openCardCheckoutModal('BHD')" class="w-full py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow">
+                                    <i class="fas fa-credit-card"></i> Pagar con Tarjeta (BHD)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Banreservas Card -->
+                        <div class="bg-white rounded-2xl overflow-hidden border border-blue-200 shadow-md hover:shadow-xl transition flex flex-col justify-between">
+                            <div>
+                                <!-- Card Banner -->
+                                <div class="bg-blue-800 p-4 text-white flex justify-between items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 rounded-full bg-white text-blue-900 flex items-center justify-center font-bold text-sm">
+                                            BR
+                                        </div>
+                                        <span class="font-bold tracking-wider text-base">BANRESERVAS</span>
+                                    </div>
+                                    <i class="fas fa-vault text-xl opacity-80"></i>
+                                </div>
+                                <!-- Account Details -->
+                                <div class="p-6 text-center space-y-4">
+                                    <div class="bg-beige-50 p-4 rounded-xl border border-beige-200">
+                                        <span class="block text-bistre/60 text-xs uppercase font-bold tracking-wider mb-1">NÚMERO DE CUENTA:</span>
+                                        <span id="banresAccNum" class="text-xl font-extrabold text-blue-900 font-mono tracking-wider">9603466502</span>
+                                        <button onclick="copyToClipboard('9603466502', 'Número de cuenta Banreservas copiado')" class="block mx-auto mt-2 text-xs text-blue-700 hover:text-blue-900 font-semibold underline">
+                                            <i class="fas fa-copy mr-1"></i> Copiar Cuenta
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-beige-50 border-t border-beige-200 text-center">
+                                <button onclick="openCardCheckoutModal('Banreservas')" class="w-full py-2 bg-blue-800 hover:bg-blue-900 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow">
+                                    <i class="fas fa-credit-card"></i> Pagar con Tarjeta (Banreservas)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Banco Popular Card -->
+                        <div class="bg-white rounded-2xl overflow-hidden border border-indigo-200 shadow-md hover:shadow-xl transition flex flex-col justify-between">
+                            <div>
+                                <!-- Card Banner -->
+                                <div class="bg-indigo-900 p-4 text-white flex justify-between items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 rounded-full bg-white text-indigo-900 flex items-center justify-center font-bold text-sm">
+                                            BP
+                                        </div>
+                                        <span class="font-bold tracking-wider text-base">BANCO POPULAR</span>
+                                    </div>
+                                    <i class="fas fa-credit-card text-xl opacity-80"></i>
+                                </div>
+                                <!-- Account Details -->
+                                <div class="p-6 text-center space-y-4">
+                                    <div class="bg-beige-50 p-4 rounded-xl border border-beige-200">
+                                        <span class="block text-bistre/60 text-xs uppercase font-bold tracking-wider mb-1">NÚMERO DE CUENTA:</span>
+                                        <span id="popularAccNum" class="text-xl font-extrabold text-indigo-900 font-mono tracking-wider">846781821</span>
+                                        <button onclick="copyToClipboard('846781821', 'Número de cuenta Banco Popular copiado')" class="block mx-auto mt-2 text-xs text-indigo-700 hover:text-indigo-900 font-semibold underline">
+                                            <i class="fas fa-copy mr-1"></i> Copiar Cuenta
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-beige-50 border-t border-beige-200 text-center">
+                                <button onclick="sendReceiptToWhatsApp()" class="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow">
+                                    <i class="fab fa-whatsapp"></i> Reportar Transferencia
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Transfer Notice Footer -->
+                    <div class="bg-beige-100/70 p-4 rounded-2xl border border-gold-500/30 text-center text-xs text-bistre/80 italic space-y-1">
+                        <p class="font-semibold text-bistre">*Confirmar información de transferencia antes de cada procesamiento.*</p>
+                        <p class="text-[11px]">Soporte y recepción de comprobantes vía WhatsApp al <span class="font-bold text-gold-700">1-809-431-8218</span>.</p>
+                    </div>
+                </div>
+
+                <!-- SUB-CONTENT 3: CITAS Y RECORDATORIOS -->
+                <div id="admin-subcontent-appointments" class="admin-subcontent hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        <!-- Appointments Scheduler -->
+                        <div class="lg:col-span-7 space-y-6">
+                            <div class="pb-2 border-b border-beige-200">
+                                <h3 class="font-serif-title text-xl font-bold text-bistre flex items-center gap-2">
+                                    <i class="fas fa-calendar-alt text-gold-600"></i> Agendar Cita
+                                </h3>
+                                <p class="text-xs text-bistre/60">Programa citas y envía recordatorios por WhatsApp</p>
+                            </div>
+
+                            <form id="appointmentForm" onsubmit="saveAppointment(event)" class="space-y-4 text-xs">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-bistre/80 font-medium mb-1">Nombre de Clienta:</label>
+                                        <input type="text" id="appClientName" required placeholder="Ej: María López" class="w-full p-2.5 rounded-xl border border-beige-200 bg-white focus:outline-none focus:border-gold-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-bistre/80 font-medium mb-1">Teléfono WhatsApp:</label>
+                                        <input type="tel" id="appClientPhone" required placeholder="8094318218" class="w-full p-2.5 rounded-xl border border-beige-200 bg-white focus:outline-none focus:border-gold-500">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-bistre/80 font-medium mb-1">Fecha de la Cita:</label>
+                                        <input type="date" id="appDate" required class="w-full p-2.5 rounded-xl border border-beige-200 bg-white focus:outline-none focus:border-gold-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-bistre/80 font-medium mb-1">Hora:</label>
+                                        <input type="time" id="appTime" required class="w-full p-2.5 rounded-xl border border-beige-200 bg-white focus:outline-none focus:border-gold-500">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-bistre/80 font-medium mb-1">Servicio / Detalle de Cita:</label>
+                                    <textarea id="appNotes" rows="2" placeholder="Ej: Prueba de colonias y retiro de pedido especial..." class="w-full p-2.5 rounded-xl border border-beige-200 bg-white focus:outline-none focus:border-gold-500"></textarea>
+                                </div>
+
+                                <button type="submit" class="w-full py-2.5 rounded-xl gold-gradient-bg text-white font-bold text-xs shadow hover:brightness-105 transition flex items-center justify-center gap-2">
+                                    <i class="fas fa-plus-circle"></i> AGENDAR CITA
+                                </button>
+                            </form>
+
+                            <div class="pt-4 border-t border-beige-200">
+                                <h4 class="font-serif-title text-lg font-bold text-bistre mb-3">Próximas Citas Agendadas</h4>
+                                <div id="appointmentsList" class="space-y-3 max-h-64 overflow-y-auto pr-1">
+                                    <!-- Populated via JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- WhatsApp Quick Reminders Hub -->
+                        <div class="lg:col-span-5 space-y-6">
+                            <div class="pb-2 border-b border-beige-200">
+                                <h3 class="font-serif-title text-xl font-bold text-bistre flex items-center gap-2">
+                                    <i class="fab fa-whatsapp text-green-600"></i> Enviar Recordatorios
+                                </h3>
+                                <p class="text-xs text-bistre/60">Mensajes instantáneos para cobro de abonos y citas</p>
+                            </div>
+
+                            <div class="space-y-4 text-xs">
+                                <div class="bg-green-50/60 p-4 rounded-xl border border-green-200/60 space-y-3">
+                                    <h4 class="font-bold text-green-800 flex items-center gap-2">
+                                        <i class="fas fa-bell"></i> Recordatorio de Pago Pendiente
+                                    </h4>
+                                    <p class="text-[11px] text-green-700">Genera un mensaje cordial de pago para clientas con saldos o abonos a crédito.</p>
+                                    
+                                    <input type="tel" id="remPaymentPhone" placeholder="Teléfono de la clienta" class="w-full p-2 rounded-lg border border-green-200 bg-white">
+                                    <input type="text" id="remPaymentName" placeholder="Nombre de la clienta" class="w-full p-2 rounded-lg border border-green-200 bg-white">
+                                    <input type="number" id="remPaymentAmount" placeholder="Monto pendiente (RD$)" class="w-full p-2 rounded-lg border border-green-200 bg-white">
+
+                                    <button onclick="sendWhatsAppPaymentReminder()" class="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold transition flex items-center justify-center gap-2">
+                                        <i class="fab fa-whatsapp"></i> Enviar Recordatorio por WhatsApp
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-CONTENT 4: DIARIO E INVENTARIO -->
+                <div id="admin-subcontent-inventory" class="admin-subcontent hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h3 class="font-serif-title text-xl font-bold text-bistre">Registro Diario e Inventario</h3>
+                        <button onclick="addNewLogEntry()" class="px-4 py-2 rounded-xl gold-gradient-bg text-white text-xs font-bold shadow hover:brightness-105 transition flex items-center gap-2">
+                            <i class="fas fa-plus"></i> Registrar Actividad / Venta
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-beige-50 p-4 rounded-xl border border-beige-200">
+                            <span class="text-xs text-bistre/60 block font-medium">Cotizaciones Generadas Hoy</span>
+                            <span id="statTodayQuotes" class="text-2xl font-serif-title font-bold text-bistre">0</span>
+                        </div>
+                        <div class="bg-beige-50 p-4 rounded-xl border border-beige-200">
+                            <span class="text-xs text-bistre/60 block font-medium">Citas Agendadas Hoy</span>
+                            <span id="statTodayAppointments" class="text-2xl font-serif-title font-bold text-bistre">0</span>
+                        </div>
+                        <div class="bg-beige-50 p-4 rounded-xl border border-beige-200">
+                            <span class="text-xs text-bistre/60 block font-medium">Total Estimado en Ventas Hoy</span>
+                            <span id="statTodayTotalSales" class="text-2xl font-serif-title font-bold text-gold-700">RD$ 0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto pt-2">
+                        <h4 class="font-serif-title text-lg font-bold text-bistre mb-3">Historial de Registro Diario</h4>
+                        <table class="w-full text-left text-xs text-bistre">
+                            <thead class="bg-beige-100 font-semibold uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-3 rounded-l-lg">Hora/Fecha</th>
+                                    <th class="p-3">Tipo</th>
+                                    <th class="p-3">Detalle / Cliente</th>
+                                    <th class="p-3">Monto</th>
+                                    <th class="p-3 rounded-r-lg text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dailyLogTable" class="divide-y divide-beige-100">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUB-CONTENT 5: EDITAR PRECIOS -->
+                <div id="admin-subcontent-prices" class="admin-subcontent hidden space-y-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <h3 class="font-serif-title text-xl font-bold text-bistre">Modificar Precios y Servicios</h3>
+                        <button onclick="openAddProductModal()" class="px-4 py-2 rounded-xl gold-gradient-bg text-white text-xs font-bold shadow hover:brightness-105 transition flex items-center gap-2">
+                            <i class="fas fa-plus"></i> Agregar Nuevo Producto
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-bistre">
+                            <thead class="bg-beige-100 font-semibold uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-3 rounded-l-lg">Categoría</th>
+                                    <th class="p-3">Nombre del Producto</th>
+                                    <th class="p-3">Precio Actual (RD$)</th>
+                                    <th class="p-3 rounded-r-lg text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="priceEditorTable" class="divide-y divide-beige-100">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: PIN ACCESS LOCK -->
+    <div id="pinModal" class="fixed inset-0 bg-bistre/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-gold-500/40 text-center space-y-4">
+            <div class="w-12 h-12 gold-gradient-bg rounded-full flex items-center justify-center text-white mx-auto text-xl shadow-lg">
+                <i class="fas fa-lock"></i>
+            </div>
+            <div>
+                <h3 class="font-serif-title text-2xl font-bold text-bistre">Acceso Protegido (Adm.)</h3>
+                <p class="text-xs text-bistre/60">Ingresa tu código de seguridad para desbloquear la gestión administrativa de AJ Esencias.</p>
+            </div>
+            <div>
+                <input type="password" id="txtPinInput" maxlength="6" placeholder="••••" 
+                    class="w-full text-center text-2xl tracking-widest py-2 rounded-xl border border-beige-300 focus:outline-none focus:border-gold-500 bg-beige-50 font-bold text-bistre">
+                <p id="pinErrorMsg" class="text-xs text-red-600 mt-1 hidden font-semibold">Código incorrecto. Inténtalo de nuevo.</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="closePinModal()" class="w-1/2 py-2 rounded-xl border border-beige-200 text-bistre/70 hover:bg-beige-100 text-xs font-semibold">
+                    Cancelar
+                </button>
+                <button onclick="verifyPinCode()" class="w-1/2 py-2 rounded-xl gold-gradient-bg text-white text-xs font-bold shadow hover:brightness-105">
+                    Acceder
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: FINAL QUOTE PREVIEW / PRINT / PDF / WHATSAPP -->
+    <div id="quoteModal" class="fixed inset-0 bg-bistre/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 md:p-8 shadow-2xl border border-gold-500/40 my-8">
+            
+            <!-- Modal Actions Top Header -->
+            <div class="flex justify-between items-center pb-4 border-b border-beige-200 no-print">
+                <span class="text-xs font-bold text-gold-700 bg-gold-100 px-3 py-1 rounded-full uppercase tracking-wider">
+                    <i class="fas fa-check-circle mr-1"></i> Cotización Lista
+                </span>
+                <button onclick="closeQuoteModal()" class="text-bistre/50 hover:text-bistre text-lg">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- PRINTABLE / EXPORTABLE QUOTE CONTAINER -->
+            <div id="quotePrintableArea" class="py-6 px-2 space-y-6 bg-white text-bistre">
+                
+                <!-- Quote Header -->
+                <div class="flex justify-between items-start border-b-2 border-gold-500/30 pb-4">
+                    <div>
+                        <h1 class="font-serif-title text-3xl font-bold gold-gradient-text tracking-wide">AJ esencias</h1>
+                        <p class="text-xs text-bistre/70">Fragancias, Cremas & Cuidado Personal Glam</p>
+                        <p class="text-[11px] text-bistre/60 mt-1"><i class="fab fa-whatsapp text-green-600 mr-1"></i> Tel / WhatsApp: 1-809-431-8218</p>
+                    </div>
+                    <div class="text-right">
+                        <h2 class="font-serif-title text-xl font-bold text-bistre">COTIZACIÓN</h2>
+                        <p class="text-xs text-bistre/60" id="pdfQuoteDate">Fecha: --/--/----</p>
+                        <p class="text-xs font-semibold text-gold-700" id="pdfQuoteId">No. #AJ-0000</p>
+                    </div>
+                </div>
+
+                <!-- Client Details -->
+                <div class="bg-beige-50 p-4 rounded-xl border border-beige-200 text-xs grid grid-cols-2 gap-4">
+                    <div>
+                        <span class="block text-bistre/60 text-[10px] uppercase font-semibold">Cliente:</span>
+                        <span id="pdfClientName" class="font-bold text-bistre text-sm">--</span>
+                        <span id="pdfClientPhone" class="block text-bistre/70">--</span>
+                    </div>
+                    <div>
+                        <span class="block text-bistre/60 text-[10px] uppercase font-semibold">Ubicación de Envío:</span>
+                        <span id="pdfClientLocation" class="text-bistre text-[11px] break-all">Se acuerda por separado (El envío es aparte)</span>
+                    </div>
+                </div>
+
+                <!-- Product Details Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-beige-100 text-bistre font-semibold border-b border-beige-200">
+                            <tr>
+                                <th class="py-2 px-3">Cant.</th>
+                                <th class="py-2 px-3">Descripción Producto</th>
+                                <th class="py-2 px-3 text-right">Precio Unit.</th>
+                                <th class="py-2 px-3 text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pdfItemList" class="divide-y divide-beige-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Summary Totals Breakdown -->
+                <div class="flex justify-end pt-2">
+                    <div class="w-64 space-y-1.5 text-xs">
+                        <div class="flex justify-between text-bistre/70">
+                            <span>Subtotal Productos:</span>
+                            <span id="pdfSubtotal">RD$ 0.00</span>
+                        </div>
+                        <div id="pdfAddonRow" class="flex justify-between text-bistre/70 hidden">
+                            <span>Mensaje Dedicatoria:</span>
+                            <span>RD$ 25.00</span>
+                        </div>
+                        <div class="flex justify-between text-base font-serif-title font-bold text-bistre border-t border-beige-300 pt-2">
+                            <span>TOTAL COTIZADO:</span>
+                            <span id="pdfGrandTotal" class="text-gold-700">RD$ 0.00</span>
+                        </div>
+                        <div id="pdfAbonoRow" class="pt-2 border-t border-dashed border-beige-300 hidden text-[11px]">
+                            <div class="flex justify-between text-green-700 font-semibold">
+                                <span>Monto Abonado:</span>
+                                <span id="pdfAbonoPaid">RD$ 0.00</span>
+                            </div>
+                            <div class="flex justify-between text-red-700 font-bold">
+                                <span>BALANCE PENDIENTE:</span>
+                                <span id="pdfAbonoPending">RD$ 0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Embedded Bank Details for Transfer in Quote -->
+                <div class="bg-beige-50 border border-gold-500/30 p-3 rounded-xl text-[11px] space-y-1.5">
+                    <div class="font-bold text-bistre flex items-center justify-between">
+                        <span><i class="fas fa-university text-gold-600 mr-1"></i> Cuentas para Transferencias Directas:</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center text-[10px] pt-1">
+                        <div class="bg-white p-1.5 rounded border border-beige-200">
+                            <span class="font-bold text-emerald-800 block">BHD</span>
+                            <span class="font-mono text-bistre font-bold">40404050010</span>
+                        </div>
+                        <div class="bg-white p-1.5 rounded border border-beige-200">
+                            <span class="font-bold text-blue-800 block">BANRESERVAS</span>
+                            <span class="font-mono text-bistre font-bold">9603466502</span>
+                        </div>
+                        <div class="bg-white p-1.5 rounded border border-beige-200">
+                            <span class="font-bold text-indigo-800 block">POPULAR</span>
+                            <span class="font-mono text-bistre font-bold">846781821</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Note Footer -->
+                <div class="border-t border-beige-200 pt-3 text-[11px] text-bistre/60 text-center space-y-1">
+                    <p class="italic" id="pdfPersonalMsgText"></p>
+                    <p class="font-semibold text-bistre">¡Gracias por elegir AJ esencias! Tu belleza y delicadeza es nuestra pasión.</p>
+                </div>
+
+            </div>
+
+            <!-- Modal Action Buttons (WhatsApp / PDF / Card Pay / Restart) -->
+            <div class="pt-4 border-t border-beige-200 grid grid-cols-1 sm:grid-cols-4 gap-2 no-print">
+                <button onclick="sendQuoteToWhatsApp()" class="py-2.5 px-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-xs transition flex items-center justify-center gap-1">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </button>
+                <button onclick="exportQuoteToPDF()" class="py-2.5 px-2 bg-bistre hover:bg-bistre-light text-white rounded-xl font-bold text-xs transition flex items-center justify-center gap-1">
+                    <i class="fas fa-file-pdf text-gold-400"></i> Descargar PDF
+                </button>
+                <button onclick="openCardCheckoutModal('BHD / Banreservas')" class="py-2.5 px-2 bg-blue-800 hover:bg-blue-900 text-white rounded-xl font-bold text-xs transition flex items-center justify-center gap-1">
+                    <i class="fas fa-credit-card"></i> Pagar con Tarjeta
+                </button>
+                <button onclick="startNewQuote()" class="py-2.5 px-2 gold-gradient-bg text-white rounded-xl font-bold text-xs transition flex items-center justify-center gap-1">
+                    <i class="fas fa-plus-circle"></i> Nueva Cotización
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL: CARD PAYMENT GATEWAY (BHD & BANRESERVAS LINKED) -->
+    <div id="cardCheckoutModal" class="fixed inset-0 bg-bistre/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gold-500/40 space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-beige-200">
+                <div>
+                    <h3 class="font-serif-title text-2xl font-bold text-bistre flex items-center gap-2">
+                        <i class="fas fa-shield-halved text-emerald-600"></i> Pasarela de Pago
+                    </h3>
+                    <p class="text-[11px] text-bistre/60">Procesamiento seguro BHD & Banreservas</p>
+                </div>
+                <button onclick="closeCardCheckoutModal()" class="text-bistre/50 hover:text-bistre">
+                    <i class="fas fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Virtual Credit Card Visualizer -->
+            <div class="luxury-card rounded-2xl p-5 bg-gradient-to-r from-bistre via-bistre-light to-bistre text-white shadow-xl space-y-4 border-gold-500/40 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-32 h-32 rounded-full bg-gold-500/10"></div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-serif-title font-bold gold-gradient-text text-lg">AJ esencias</span>
+                    <i class="fab fa-cc-visa text-2xl text-gold-400"></i>
+                </div>
+                <div class="space-y-1">
+                    <span class="text-[9px] uppercase tracking-widest text-beige-300">Número de Tarjeta</span>
+                    <p id="cardPreviewNum" class="font-mono text-base font-bold tracking-widest text-gold-200">•••• •••• •••• ••••</p>
+                </div>
+                <div class="flex justify-between items-center text-[10px] font-mono">
+                    <div>
+                        <span class="block text-[8px] uppercase text-beige-300">Titular</span>
+                        <span id="cardPreviewName" class="font-bold text-white uppercase">NOMBRE TITULAR</span>
+                    </div>
+                    <div>
+                        <span class="block text-[8px] uppercase text-beige-300">Vence</span>
+                        <span id="cardPreviewExp" class="font-bold text-white">MM/AA</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Form Inputs -->
+            <form onsubmit="processCardPayment(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-bistre/80 font-semibold mb-1">Nombre en la Tarjeta:</label>
+                    <input type="text" id="cardHolderName" required placeholder="Ej: MARÍA PERALTA" oninput="updateCardVisual()" class="w-full p-2.5 rounded-xl border border-beige-200 bg-white uppercase focus:border-gold-500">
+                </div>
+                <div>
+                    <label class="block text-bistre/80 font-semibold mb-1">Número de Tarjeta (Débito/Crédito):</label>
+                    <input type="text" id="cardNumberInput" maxlength="19" required placeholder="4000 0000 0000 0000" oninput="formatCardNum(this)" class="w-full p-2.5 rounded-xl border border-beige-200 bg-white font-mono focus:border-gold-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-bistre/80 font-semibold mb-1">Expiración:</label>
+                        <input type="text" id="cardExpInput" maxlength="5" required placeholder="MM/AA" oninput="formatCardExp(this)" class="w-full p-2.5 rounded-xl border border-beige-200 bg-white font-mono text-center focus:border-gold-500">
+                    </div>
+                    <div>
+                        <label class="block text-bistre/80 font-semibold mb-1">CVC / CVC2:</label>
+                        <input type="password" maxlength="4" required placeholder="•••" class="w-full p-2.5 rounded-xl border border-beige-200 bg-white font-mono text-center focus:border-gold-500">
+                    </div>
+                </div>
+                <div class="bg-beige-50 p-3 rounded-xl border border-beige-200 flex justify-between items-center text-xs">
+                    <span class="font-semibold text-bistre">Monto a Procesar:</span>
+                    <span id="cardChargeAmount" class="font-extrabold text-gold-700 text-sm">RD$ 0.00</span>
+                </div>
+                <button type="submit" id="btnSubmitCardPay" class="w-full py-3 rounded-xl gold-gradient-bg text-white font-bold text-xs shadow hover:brightness-105 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-lock"></i> PROCESAR PAGO SEGURO
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD PRODUCT -->
+    <div id="addProductModal" class="fixed inset-0 bg-bistre/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gold-500/40 space-y-4">
+            <h3 class="font-serif-title text-2xl font-bold text-bistre">Agregar Nuevo Producto</h3>
+            <form onsubmit="saveNewProduct(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-bistre/80 font-medium mb-1">Nombre del Producto:</label>
+                    <input type="text" id="newProdName" required placeholder="Ej: Manteca Lips EOS" class="w-full p-2.5 rounded-xl border border-beige-200 bg-white">
+                </div>
+                <div>
+                    <label class="block text-bistre/80 font-medium mb-1">Categoría:</label>
+                    <select id="newProdCategory" required class="w-full p-2.5 rounded-xl border border-beige-200 bg-white">
+                        <option value="Colonias y Fragancias">Colonias y Fragancias</option>
+                        <option value="Cremas, Mantequillas y Lociones">Cremas, Mantequillas y Lociones</option>
+                        <option value="Geles de Baño y Exfoliantes">Geles de Baño y Exfoliantes</option>
+                        <option value="Gomitas y Suplementos">Gomitas y Suplementos</option>
+                        <option value="Labiales y Maquillaje">Labiales y Maquillaje</option>
+                        <option value="Depilación y Afeitado">Depilación y Afeitado</option>
+                        <option value="Hogar, Velones y Ambientadores">Hogar, Velones y Ambientadores</option>
+                        <option value="Accesorios y Termos">Accesorios y Termos</option>
+                        <option value="Cuidado Masculino">Cuidado Masculino</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-bistre/80 font-medium mb-1">Precio (RD$):</label>
+                    <input type="number" id="newProdPrice" required min="0" placeholder="850" class="w-full p-2.5 rounded-xl border border-beige-200 bg-white">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeAddProductModal()" class="w-1/2 py-2 rounded-xl border border-beige-200 text-bistre/70 hover:bg-beige-100">Cancelar</button>
+                    <button type="submit" class="w-1/2 py-2 rounded-xl gold-gradient-bg text-white font-bold">Guardar Producto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-beige-200 py-4 mt-8 no-print">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-bistre/60 space-y-1">
+            <p class="font-serif-title font-bold tracking-wider text-sm gold-gradient-text">AJ esencias</p>
+            <p>© <span id="currYear"></span> Todos los derechos reservados. Perfumería, Cuidado Personal & Detalle Glamour.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Default Fixed Phone for AJ Esencias
+        const AJ_FIXED_WHATSAPP = "18094318218";
+
+        // Application State & Storage Keys
+        let products = [];
+        let creditClients = [];
+        let appointments = [];
+        let dailyLogs = [];
+        let selectedQuantities = {}; // { productId: count }
+        let isAdminUnlocked = false;
+        let activeTabToPending = null;
+
+        // Default Initial Products provided by user
+        const initialProducts = [
+            // Colonias
+            { id: 1, category: "Colonias y Fragancias", name: "COLONIA BATH AND BODY", price: 850 },
+            { id: 2, category: "Colonias y Fragancias", name: "COLONIA EOS", price: 1200 },
+
+            // Cremas
+            { id: 3, category: "Cremas, Mantequillas y Lociones", name: "CREMA BATH AND BODY", price: 800 },
+            { id: 4, category: "Cremas, Mantequillas y Lociones", name: "CREMA EOS", price: 1200 },
+            { id: 5, category: "Cremas, Mantequillas y Lociones", name: "MANTEQUILLA CORPORAL EOS", price: 1300 },
+            { id: 6, category: "Cremas, Mantequillas y Lociones", name: "CREMA FACIAL DOVE", price: 275 },
+            { id: 7, category: "Cremas, Mantequillas y Lociones", name: "CREMA CORPORAL NIVEA", price: 900 },
+            { id: 8, category: "Cremas, Mantequillas y Lociones", name: "CREMA PALMERS VAINILLA", price: 950 },
+            { id: 9, category: "Cremas, Mantequillas y Lociones", name: "SET PALMERS EMBARAZADA (4PIEZAS)", price: 2300 },
+            { id: 10, category: "Cremas, Mantequillas y Lociones", name: "ACEITE PALMERS ANTI ESTRIAS", price: 850 },
+            { id: 11, category: "Cremas, Mantequillas y Lociones", name: "CREMA PALMERS ANTI ESTRIAS", price: 950 },
+            { id: 12, category: "Cremas, Mantequillas y Lociones", name: "ACEITE EN GEL VASELINE", price: 450 },
+
+            // Geles y Exfoliantes
+            { id: 13, category: "Geles de Baño y Exfoliantes", name: "GEL DE BAÑO BATH AND BODY", price: 800 },
+            { id: 14, category: "Geles de Baño y Exfoliantes", name: "GEL DE BAÑO EOS", price: 1150 },
+            { id: 15, category: "Geles de Baño y Exfoliantes", name: "GEL DE BAÑO TREE HUT", price: 1200 },
+            { id: 16, category: "Geles de Baño y Exfoliantes", name: "GEL DE BAÑO DOVE", price: 1000 },
+            { id: 17, category: "Geles de Baño y Exfoliantes", name: "EXFOLIANTE TREE HUT", price: 1000 },
+            { id: 18, category: "Geles de Baño y Exfoliantes", name: "EXFOLIANTE DOVE", price: 1000 },
+
+            // Gomitas y Suplementos
+            { id: 19, category: "Gomitas y Suplementos", name: "BIOTIN 120 PASTILLA", price: 1200 },
+            { id: 20, category: "Gomitas y Suplementos", name: "GOMITAS DE PELO, PIEL Y UÑAS", price: 1100 },
+            { id: 21, category: "Gomitas y Suplementos", name: "GOMITA MULTIVITAMINICA", price: 1150 },
+            { id: 22, category: "Gomitas y Suplementos", name: "MELATONINA", price: 1200 },
+
+            // Labiales
+            { id: 23, category: "Labiales y Maquillaje", name: "LABIAL MAYBELLINE", price: 800 },
+            { id: 24, category: "Labiales y Maquillaje", name: "LABIAL ELF", price: 700 },
+            { id: 25, category: "Labiales y Maquillaje", name: "LABIAL GENERICO", price: 100 },
+            { id: 26, category: "Labiales y Maquillaje", name: "LABIAL NYX", price: 650 },
+
+            // Depilatorios
+            { id: 27, category: "Depilación y Afeitado", name: "CREMA DE AFEITAR EOS", price: 890 },
+            { id: 28, category: "Depilación y Afeitado", name: "CREMA DEPILATORIA NAIR", price: 890 },
+            { id: 29, category: "Depilación y Afeitado", name: "CREMA DEPILATORIA VEET", price: 1250 },
+
+            // Hogar y Velones
+            { id: 30, category: "Hogar, Velones y Ambientadores", name: "VELONES BATH AND BODY (1 MECHA)", price: 950 },
+            { id: 31, category: "Hogar, Velones y Ambientadores", name: "AMBIENTADOR (CONECTOR)", price: 400 },
+            { id: 32, category: "Hogar, Velones y Ambientadores", name: "AMBIENTADOR (AROMA)", price: 400 },
+
+            // Accesorios
+            { id: 33, category: "Accesorios y Termos", name: "LLAVEROS", price: 250 },
+            { id: 34, category: "Accesorios y Termos", name: "TERMOS DE CAFÉ", price: 500 },
+            { id: 35, category: "Accesorios y Termos", name: "VASOS TERMICOS", price: 480 },
+            { id: 36, category: "Accesorios y Termos", name: "SHOPPING", price: 50 },
+
+            // Hombre
+            { id: 37, category: "Cuidado Masculino", name: "AEROSOL DE HOMBRE", price: 900 }
+        ];
+
+        window.onload = function() {
+            document.getElementById('currYear').innerText = new Date().getFullYear();
+            
+            // Load LocalStorage data if exists
+            const savedProds = localStorage.getItem('aj_products');
+            products = savedProds ? JSON.parse(savedProds) : [...initialProducts];
+
+            const savedCredit = localStorage.getItem('aj_credit');
+            creditClients = savedCredit ? JSON.parse(savedCredit) : [];
+
+            const savedApp = localStorage.getItem('aj_appointments');
+            appointments = savedApp ? JSON.parse(savedApp) : [];
+
+            const savedLogs = localStorage.getItem('aj_daily_logs');
+            dailyLogs = savedLogs ? JSON.parse(savedLogs) : [];
+
+            // Render Products & Tables
+            renderProductCatalog();
+            renderPriceEditor();
+            renderCreditTable();
+            renderAppointmentsList();
+            renderDailyLogs();
+            calculateTotal();
+        };
+
+        function saveData() {
+            localStorage.setItem('aj_products', JSON.stringify(products));
+            localStorage.setItem('aj_credit', JSON.stringify(creditClients));
+            localStorage.setItem('aj_appointments', JSON.stringify(appointments));
+            localStorage.setItem('aj_daily_logs', JSON.stringify(dailyLogs));
+        }
+
+        function checkProtectedTab(subTab = 'credit') {
+            if (isAdminUnlocked) {
+                switchTab('admin');
+                if (subTab) switchAdminSubTab(subTab);
+            } else {
+                activeTabToPending = subTab;
+                openPinModal();
+            }
+        }
+
+        function openPinModal() {
+            document.getElementById('txtPinInput').value = '';
+            document.getElementById('pinErrorMsg').classList.add('hidden');
+            document.getElementById('pinModal').classList.remove('hidden');
+        }
+
+        function closePinModal() {
+            document.getElementById('pinModal').classList.add('hidden');
+            activeTabToPending = null;
+        }
+
+        function verifyPinCode() {
+            const enteredPin = document.getElementById('txtPinInput').value.trim();
+            const targetPin = String(12) + String(21);
+            
+            if (enteredPin === targetPin) {
+                isAdminUnlocked = true;
+                closePinModal();
+                updatePinUIStatus();
+                
+                switchTab('admin');
+                if (activeTabToPending) {
+                    switchAdminSubTab(activeTabToPending);
+                    activeTabToPending = null;
+                } else {
+                    switchAdminSubTab('credit');
+                }
+            } else {
+                document.getElementById('pinErrorMsg').classList.remove('hidden');
+            }
+        }
+
+        function updatePinUIStatus() {
+            const statusBtn = document.getElementById('pinStatusBtn');
+            const lockIcon = document.getElementById('pinLockIcon');
+            const lockText = document.getElementById('pinLockText');
+
+            if (isAdminUnlocked) {
+                statusBtn.classList.add('bg-gold-100', 'border-gold-500');
+                lockIcon.className = "fas fa-lock-open text-green-700";
+                lockText.innerText = "Acceso Concedido";
+            }
+        }
+
+        function switchTab(tabId) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(el => el.classList.add('hidden'));
+
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(el => {
+                el.classList.remove('active-tab', 'bg-white', 'shadow-sm', 'border', 'border-gold-500/30');
+                el.classList.add('text-bistre/70');
+            });
+
+            const targetContent = document.getElementById('section-' + tabId);
+            if (targetContent) targetContent.classList.remove('hidden');
+
+            const targetBtn = document.getElementById('tab-' + tabId);
+            if (targetBtn) {
+                targetBtn.classList.add('active-tab', 'bg-white', 'shadow-sm', 'border', 'border-gold-500/30');
+                targetBtn.classList.remove('text-bistre/70');
+            }
+        }
+
+        function switchAdminSubTab(subTabId) {
+            const subcontents = document.querySelectorAll('.admin-subcontent');
+            subcontents.forEach(el => el.classList.add('hidden'));
+
+            const subtabs = document.querySelectorAll('.admin-subtab');
+            subtabs.forEach(el => {
+                el.classList.remove('bg-white', 'text-bistre', 'font-semibold', 'shadow-xs');
+                el.classList.add('text-bistre/70');
+            });
+
+            const targetContent = document.getElementById('admin-subcontent-' + subTabId);
+            if (targetContent) targetContent.classList.remove('hidden');
+
+            const targetBtn = document.getElementById('subtab-' + subTabId);
+            if (targetBtn) {
+                targetBtn.classList.add('bg-white', 'text-bistre', 'font-semibold', 'shadow-xs');
+                targetBtn.classList.remove('text-bistre/70');
+            }
+        }
+
+        function renderProductCatalog() {
+            const container = document.getElementById('productsContainer');
+            const quickLinks = document.getElementById('categoryQuickLinks');
+            container.innerHTML = '';
+            quickLinks.innerHTML = '';
+
+            const categories = {};
+            products.forEach(p => {
+                if (!categories[p.category]) categories[p.category] = [];
+                categories[p.category].push(p);
+            });
+
+            Object.keys(categories).forEach((catName, index) => {
+                const link = document.createElement('a');
+                link.href = `#cat-${index}`;
+                link.className = "px-3 py-1.5 text-xs rounded-full bg-white border border-beige-200 text-bistre/80 hover:border-gold-500 hover:text-gold-700 transition whitespace-nowrap shadow-xs font-medium";
+                link.innerText = catName;
+                quickLinks.appendChild(link);
+            });
+
+            Object.keys(categories).forEach((catName, index) => {
+                const catGroup = document.createElement('div');
+                catGroup.id = `cat-${index}`;
+                catGroup.className = "space-y-4";
+
+                const title = document.createElement('h3');
+                title.className = "font-serif-title text-2xl font-bold text-bistre border-b border-gold-500/30 pb-2 flex items-center justify-between";
+                title.innerHTML = `<span><i class="fas fa-sparkles text-gold-600 mr-2 text-sm"></i>${catName}</span> <span class="text-xs font-sans text-bistre/50 font-normal">(${categories[catName].length} items)</span>`;
+                catGroup.appendChild(title);
+
+                const grid = document.createElement('div');
+                grid.className = "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4";
+
+                categories[catName].forEach(p => {
+                    const qty = selectedQuantities[p.id] || 0;
+                    const card = document.createElement('div');
+                    card.className = `luxury-card rounded-xl p-4 flex flex-col justify-between relative ${qty > 0 ? 'border-gold-500 ring-1 ring-gold-500/30 bg-gold-100/10' : ''}`;
+                    card.setAttribute('data-name', p.name.toLowerCase());
+
+                    card.innerHTML = `
+                        <div class="space-y-1 mb-3">
+                            <span class="text-[10px] text-gold-700 font-bold uppercase tracking-wider bg-beige-100 px-2 py-0.5 rounded">AJ Esencias</span>
+                            <h4 class="font-semibold text-bistre text-sm leading-snug">${p.name}</h4>
+                            <p class="font-serif-title font-bold text-gold-700 text-lg">RD$ ${p.price.toLocaleString()}</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-beige-100 pt-3 mt-auto">
+                            <span class="text-xs text-bistre/60">Cantidad:</span>
+                            <div class="flex items-center space-x-2 bg-beige-100/80 rounded-lg p-1 border border-beige-200">
+                                <button onclick="updateQty(${p.id}, -1)" class="w-7 h-7 bg-white rounded-md flex items-center justify-center text-bistre hover:bg-gold-200 transition text-xs font-bold shadow-xs">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="w-6 text-center font-bold text-xs text-bistre">${qty}</span>
+                                <button onclick="updateQty(${p.id}, 1)" class="w-7 h-7 gold-gradient-bg rounded-md flex items-center justify-center text-white hover:brightness-105 transition text-xs font-bold shadow-xs">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                catGroup.appendChild(grid);
+                container.appendChild(catGroup);
+            });
+        }
+
+        function updateQty(productId, change) {
+            const current = selectedQuantities[productId] || 0;
+            const updated = Math.max(0, current + change);
+            if (updated === 0) {
+                delete selectedQuantities[productId];
+            } else {
+                selectedQuantities[productId] = updated;
+            }
+            renderProductCatalog();
+            calculateTotal();
+        }
+
+        function clearSelection() {
+            selectedQuantities = {};
+            renderProductCatalog();
+            calculateTotal();
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('productSearch').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('#productsContainer [data-name]');
+            
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                if (name.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function calculateTotal() {
+            let subtotal = 0;
+            let itemCount = 0;
+            const itemListContainer = document.getElementById('cartItemList');
+            itemListContainer.innerHTML = '';
+
+            Object.keys(selectedQuantities).forEach(id => {
+                const p = products.find(prod => prod.id == id);
+                const qty = selectedQuantities[id];
+                if (p && qty > 0) {
+                    const lineSub = p.price * qty;
+                    subtotal += lineSub;
+                    itemCount += qty;
+
+                    const row = document.createElement('div');
+                    row.className = "flex justify-between items-center py-2 border-b border-beige-100 text-xs";
+                    row.innerHTML = `
+                        <div class="pr-2">
+                            <span class="font-semibold text-bistre">${p.name}</span>
+                            <span class="block text-[11px] text-bistre/60">${qty} x RD$ ${p.price.toLocaleString()}</span>
+                        </div>
+                        <span class="font-bold text-gold-700">RD$ ${lineSub.toLocaleString()}</span>
+                    `;
+                    itemListContainer.appendChild(row);
+                }
+            });
+
+            if (itemCount === 0) {
+                itemListContainer.innerHTML = '<p class="text-center text-bistre/50 py-6 italic text-xs">Aún no has seleccionado productos.</p>';
+            }
+
+            const chkMsg = document.getElementById('chkPersonalMessage');
+            const txtMsg = document.getElementById('txtPersonalMessage');
+            let addonTotal = 0;
+
+            if (chkMsg.checked) {
+                addonTotal += 25;
+                txtMsg.classList.remove('hidden');
+            } else {
+                txtMsg.classList.add('hidden');
+            }
+
+            const grandTotal = subtotal + addonTotal;
+
+            document.getElementById('cartCountBadge').innerText = `${itemCount} ítems`;
+            document.getElementById('lblSubtotal').innerText = `RD$ ${subtotal.toLocaleString()}`;
+            document.getElementById('lblAddonTotal').innerText = `RD$ ${addonTotal.toLocaleString()}`;
+            document.getElementById('lblGrandTotal').innerText = `RD$ ${grandTotal.toLocaleString()}`;
+
+            const numAbono = parseFloat(document.getElementById('numAbonoAmount').value) || 0;
+            const pending = Math.max(0, grandTotal - numAbono);
+            document.getElementById('lblPendingBalance').innerText = `RD$ ${pending.toLocaleString()}`;
+        }
+
+        function toggleAbonoInput() {
+            const chk = document.getElementById('chkIsAbono');
+            const container = document.getElementById('abonoContainer');
+            if (chk.checked) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+                document.getElementById('numAbonoAmount').value = '';
+            }
+            calculateTotal();
+        }
+
+        function getGPSLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const mapsUrl = `https://maps.google.com/?q=${lat},${lng}`;
+                    document.getElementById('txtLocationLink').value = mapsUrl;
+                    alert("¡Ubicación GPS capturada con éxito!");
+                }, () => {
+                    alert("No se pudo obtener la ubicación GPS automática. Puedes pegar el link manualmente.");
+                });
+            } else {
+                alert("Geolocalización no es soportada por tu navegador.");
+            }
+        }
+
+        let currentGeneratedQuote = null;
+
+        function generateFinalQuote() {
+            if (Object.keys(selectedQuantities).length === 0) {
+                alert("Por favor, selecciona al menos un producto antes de generar la cotización.");
+                return;
+            }
+
+            let subtotal = 0;
+            const items = [];
+
+            Object.keys(selectedQuantities).forEach(id => {
+                const p = products.find(prod => prod.id == id);
+                const qty = selectedQuantities[id];
+                if (p && qty > 0) {
+                    const lineSub = p.price * qty;
+                    subtotal += lineSub;
+                    items.push({ name: p.name, price: p.price, qty: qty, subtotal: lineSub });
+                }
+            });
+
+            const hasMsg = document.getElementById('chkPersonalMessage').checked;
+            const msgText = document.getElementById('txtPersonalMessage').value.trim();
+            const addonPrice = hasMsg ? 25 : 0;
+            const grandTotal = subtotal + addonPrice;
+
+            const clientName = document.getElementById('quoteClientName').value.trim() || "Cliente Especial";
+            const clientPhone = document.getElementById('quoteClientPhone').value.trim() || "N/A";
+            const locationLink = document.getElementById('txtLocationLink').value.trim() || "El envío es aparte (se acuerda con el cliente)";
+
+            const isAbono = document.getElementById('chkIsAbono').checked;
+            const abonoAmount = isAbono ? (parseFloat(document.getElementById('numAbonoAmount').value) || 0) : 0;
+            const pendingBalance = Math.max(0, grandTotal - abonoAmount);
+
+            const now = new Date();
+            const quoteId = "AJ-" + Math.floor(1000 + Math.random() * 9000);
+
+            currentGeneratedQuote = {
+                id: quoteId,
+                date: now.toLocaleDateString('es-DO') + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                clientName,
+                clientPhone,
+                locationLink,
+                items,
+                subtotal,
+                addonPrice,
+                grandTotal,
+                isAbono,
+                abonoAmount,
+                pendingBalance,
+                personalMessage: hasMsg ? msgText : ""
+            };
+
+            document.getElementById('pdfQuoteId').innerText = `No. #${quoteId}`;
+            document.getElementById('pdfQuoteDate').innerText = `Fecha: ${currentGeneratedQuote.date}`;
+            document.getElementById('pdfClientName').innerText = clientName;
+            document.getElementById('pdfClientPhone').innerText = clientPhone;
+            document.getElementById('pdfClientLocation').innerText = locationLink;
+
+            const pdfTable = document.getElementById('pdfItemList');
+            pdfTable.innerHTML = '';
+            items.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-2 px-3 font-bold">${item.qty}</td>
+                    <td class="py-2 px-3">${item.name}</td>
+                    <td class="py-2 px-3 text-right">RD$ ${item.price.toLocaleString()}</td>
+                    <td class="py-2 px-3 text-right font-semibold">RD$ ${item.subtotal.toLocaleString()}</td>
+                `;
+                pdfTable.appendChild(tr);
+            });
+
+            document.getElementById('pdfSubtotal').innerText = `RD$ ${subtotal.toLocaleString()}`;
+            
+            if (hasMsg) {
+                document.getElementById('pdfAddonRow').classList.remove('hidden');
+            } else {
+                document.getElementById('pdfAddonRow').classList.add('hidden');
+            }
+
+            document.getElementById('pdfGrandTotal').innerText = `RD$ ${grandTotal.toLocaleString()}`;
+
+            if (isAbono) {
+                document.getElementById('pdfAbonoRow').classList.remove('hidden');
+                document.getElementById('pdfAbonoPaid').innerText = `RD$ ${abonoAmount.toLocaleString()}`;
+                document.getElementById('pdfAbonoPending').innerText = `RD$ ${pendingBalance.toLocaleString()}`;
+            } else {
+                document.getElementById('pdfAbonoRow').classList.add('hidden');
+            }
+
+            if (msgText) {
+                document.getElementById('pdfPersonalMsgText').innerText = ` Dedicatoria: "${msgText}"`;
+            } else {
+                document.getElementById('pdfPersonalMsgText').innerText = '';
+            }
+
+            dailyLogs.unshift({
+                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                type: "Cotización Generada",
+                detail: `Cotización #${quoteId} para ${clientName}`,
+                amount: grandTotal
+            });
+            saveData();
+            renderDailyLogs();
+
+            document.getElementById('quoteModal').classList.remove('hidden');
+        }
+
+        function closeQuoteModal() {
+            document.getElementById('quoteModal').classList.add('hidden');
+        }
+
+        function startNewQuote() {
+            closeQuoteModal();
+            clearSelection();
+            document.getElementById('quoteClientName').value = '';
+            document.getElementById('quoteClientPhone').value = '';
+            document.getElementById('txtLocationLink').value = '';
+            document.getElementById('chkPersonalMessage').checked = false;
+            document.getElementById('txtPersonalMessage').value = '';
+            document.getElementById('chkIsAbono').checked = false;
+            document.getElementById('numAbonoAmount').value = '';
+            toggleAbonoInput();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function sendQuoteToWhatsApp() {
+            if (!currentGeneratedQuote) return;
+
+            let text = `✨ *COTIZACIÓN DE AJ ESENCIAS* ✨\n`;
+            text += `*Cotización No:* #${currentGeneratedQuote.id}\n`;
+            text += `*Cliente:* ${currentGeneratedQuote.clientName}\n`;
+            text += `-----------------------------------\n`;
+            text += `*DETALLE DE PRODUCTOS:*\n`;
+
+            currentGeneratedQuote.items.forEach(i => {
+                text += `• ${i.qty}x ${i.name} - RD$ ${i.subtotal.toLocaleString()}\n`;
+            });
+
+            if (currentGeneratedQuote.addonPrice > 0) {
+                text += `• Dedicatoria Personalizada - RD$ 25\n`;
+            }
+
+            text += `-----------------------------------\n`;
+            text += `*SUBTOTAL:* RD$ ${currentGeneratedQuote.subtotal.toLocaleString()}\n`;
+            text += `*COSTO TOTAL:* RD$ ${currentGeneratedQuote.grandTotal.toLocaleString()}\n`;
+
+            if (currentGeneratedQuote.isAbono) {
+                text += `*Monto Abonado:* RD$ ${currentGeneratedQuote.abonoAmount.toLocaleString()}\n`;
+                text += `*RESTA PENDIENTE:* RD$ ${currentGeneratedQuote.pendingBalance.toLocaleString()}\n`;
+            }
+
+            text += `\n*Ubicación / Envío:* ${currentGeneratedQuote.locationLink}\n`;
+            text += `_Nota: El envío se cotiza aparte._\n\n`;
+            text += `💳 *CUENTAS BANCARIAS PARA TRANSFERENCIA:*\n`;
+            text += `• BHD: 40404050010\n`;
+            text += `• BANRESERVAS: 9603466502\n`;
+            text += `• BANCO POPULAR: 846781821\n\n`;
+            text += `🌸 *¡Gracias por preferir AJ esencias!*`;
+
+            const encoded = encodeURIComponent(text);
+            const waUrl = `https://wa.me/${AJ_FIXED_WHATSAPP}?text=${encoded}`;
+            window.open(waUrl, '_blank');
+        }
+
+        function exportQuoteToPDF() {
+            const element = document.getElementById('quotePrintableArea');
+            const opt = {
+                margin:       0.4,
+                filename:     `Cotizacion_AJ_Esencias_${currentGeneratedQuote ? currentGeneratedQuote.id : 'export'}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function copyToClipboard(text, message) {
+            const tempInput = document.createElement('input');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            alert(message);
+        }
+
+        function openCardCheckoutModal(bankName) {
+            const amount = currentGeneratedQuote ? currentGeneratedQuote.grandTotal : 0;
+            document.getElementById('cardChargeAmount').innerText = `RD$ ${amount.toLocaleString()}`;
+            document.getElementById('cardCheckoutModal').classList.remove('hidden');
+        }
+
+        function closeCardCheckoutModal() {
+            document.getElementById('cardCheckoutModal').classList.add('hidden');
+        }
+
+        function updateCardVisual() {
+            const name = document.getElementById('cardHolderName').value.trim() || "NOMBRE TITULAR";
+            document.getElementById('cardPreviewName').innerText = name.toUpperCase();
+        }
+
+        function formatCardNum(input) {
+            let val = input.value.replace(/\D/g, '');
+            let formatted = val.match(/.{1,4}/g)?.join(' ') || '';
+            input.value = formatted;
+            document.getElementById('cardPreviewNum').innerText = formatted || "•••• •••• •••• ••••";
+        }
+
+        function formatCardExp(input) {
+            let val = input.value.replace(/\D/g, '');
+            if (val.length >= 2) {
+                input.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+            } else {
+                input.value = val;
+            }
+            document.getElementById('cardPreviewExp').innerText = input.value || "MM/AA";
+        }
+
+        function processCardPayment(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitCardPay');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Procesando con BHD / Banreservas...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                alert("¡PAGO PROCESADO EXITOSAMENTE!\nSe ha generado el recibo digital de AJ Esencias.");
+                btn.innerHTML = '<i class="fas fa-lock"></i> PROCESAR PAGO SEGURO';
+                btn.disabled = false;
+                closeCardCheckoutModal();
+                
+                if (currentGeneratedQuote) {
+                    sendReceiptToWhatsApp();
+                }
+            }, 1800);
+        }
+
+        function sendReceiptToWhatsApp() {
+            let text = `Hola *AJ Esencias* ✨, adjunto mi reporte de pago/transferencia bancaria para mi pedido.`;
+            window.open(`https://wa.me/${AJ_FIXED_WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function renderCreditTable() {
+            const tbody = document.getElementById('creditClientsTable');
+            tbody.innerHTML = '';
+
+            if (creditClients.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-bistre/50 italic">No hay registros de clientes a crédito.</td></tr>';
+                return;
+            }
+
+            creditClients.forEach((client, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-beige-50 transition";
+                
+                const isPaid = client.remaining <= 0;
+                const statusBadge = isPaid 
+                    ? '<span class="bg-green-100 text-green-800 px-2 py-0.5 rounded font-bold">PAGADO</span>' 
+                    : '<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded font-bold">PENDIENTE</span>';
+
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-bistre">${client.name}</td>
+                    <td class="p-3">${client.phone}</td>
+                    <td class="p-3 font-medium">RD$ ${client.totalAmount.toLocaleString()}</td>
+                    <td class="p-3 text-green-700 font-semibold">RD$ ${client.paidAmount.toLocaleString()}</td>
+                    <td class="p-3 text-red-700 font-bold">RD$ ${client.remaining.toLocaleString()}</td>
+                    <td class="p-3">${statusBadge}</td>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="addCreditAbono(${idx})" title="Registrar Abono" class="px-2 py-1 bg-gold-500 hover:bg-gold-600 text-white rounded text-[11px] font-bold">
+                            <i class="fas fa-plus"></i> Abono
+                        </button>
+                        <button onclick="sendCreditWhatsAppReminder(${idx})" title="Enviar WhatsApp" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-[11px] font-bold">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openNewCreditModal() {
+            const name = prompt("Nombre completo del cliente a crédito:");
+            if (!name) return;
+            const phone = prompt("Teléfono WhatsApp del cliente:");
+            if (!phone) return;
+            const amount = parseFloat(prompt("Monto total adeudado (RD$):")) || 0;
+            const initialAbono = parseFloat(prompt("Abono inicial entregado (RD$ - colocar 0 si no abonó):")) || 0;
+
+            const remaining = Math.max(0, amount - initialAbono);
+
+            creditClients.unshift({
+                name,
+                phone,
+                totalAmount: amount,
+                paidAmount: initialAbono,
+                remaining: remaining
+            });
+
+            saveData();
+            renderCreditTable();
+            alert("Cliente registrado en el catálogo a crédito.");
+        }
+
+        function addCreditAbono(index) {
+            const client = creditClients[index];
+            const abono = parseFloat(prompt(`Ingresar monto de abono para ${client.name} (Saldo restante: RD$ ${client.remaining}):`));
+            if (abono && abono > 0) {
+                client.paidAmount += abono;
+                client.remaining = Math.max(0, client.totalAmount - client.paidAmount);
+                saveData();
+                renderCreditTable();
+
+                dailyLogs.unshift({
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    type: "Abono Recibido",
+                    detail: `Abono de RD$ ${abono} por ${client.name}`,
+                    amount: abono
+                });
+                saveData();
+                renderDailyLogs();
+                alert("Abono registrado correctamente.");
+            }
+        }
+
+        function sendCreditWhatsAppReminder(index) {
+            const client = creditClients[index];
+            let text = `Hola ${client.name} ✨, te saludamos de *AJ esencias*. Te recordamos tu cuenta de crédito. Saldo pendiente actual: *RD$ ${client.remaining.toLocaleString()}*.\n\nPuedes abonar mediante transferencias a nuestras cuentas bancarias BHD, Banreservas o Banco Popular. Quedamos a tu orden. ¡Muchas gracias!`;
+            const encoded = encodeURIComponent(text);
+            const phone = client.phone.replace(/[^0-9]/g, '') || AJ_FIXED_WHATSAPP;
+            window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank');
+        }
+
+        function sendWhatsAppPaymentReminder() {
+            const phone = document.getElementById('remPaymentPhone').value.trim() || AJ_FIXED_WHATSAPP;
+            const name = document.getElementById('remPaymentName').value.trim() || "Estimada clienta";
+            const amount = document.getElementById('remPaymentAmount').value.trim() || "0";
+
+            let text = `Hola ${name} ✨, te contactamos de *AJ esencias*. Te recordamos que tienes un saldo pendiente de *RD$ ${amount}*. ¿Cuándo te gustaría realizar tu abono? Puedes transferir a nuestras cuentas BHD, Banreservas o Popular. ¡Muchas gracias!`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function saveAppointment(e) {
+            e.preventDefault();
+            const name = document.getElementById('appClientName').value.trim();
+            const phone = document.getElementById('appClientPhone').value.trim();
+            const date = document.getElementById('appDate').value;
+            const time = document.getElementById('appTime').value;
+            const notes = document.getElementById('appNotes').value.trim();
+
+            appointments.unshift({ id: Date.now(), name, phone, date, time, notes });
+            saveData();
+            renderAppointmentsList();
+
+            document.getElementById('appointmentForm').reset();
+            alert("¡Cita agendada exitosamente!");
+        }
+
+        function renderAppointmentsList() {
+            const container = document.getElementById('appointmentsList');
+            container.innerHTML = '';
+
+            if (appointments.length === 0) {
+                container.innerHTML = '<p class="text-xs text-bistre/50 italic py-4">No hay citas programadas.</p>';
+                return;
+            }
+
+            appointments.forEach(app => {
+                const card = document.createElement('div');
+                card.className = "bg-beige-50 p-3 rounded-xl border border-beige-200 text-xs flex justify-between items-center";
+                card.innerHTML = `
+                    <div>
+                        <div class="font-bold text-bistre">${app.name} <span class="text-gold-700 font-normal">(${app.date} ${app.time})</span></div>
+                        <div class="text-bistre/70">${app.notes || 'Sin detalles extra'}</div>
+                        <div class="text-[10px] text-bistre/50"><i class="fab fa-whatsapp text-green-600"></i> ${app.phone}</div>
+                    </div>
+                    <button onclick="sendAppointmentConfirmation('${app.phone}', '${app.name}', '${app.date}', '${app.time}')" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold text-[11px] transition flex items-center gap-1">
+                        <i class="fab fa-whatsapp"></i> Confirmar
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('statTodayAppointments').innerText = appointments.length;
+        }
+
+        function sendAppointmentConfirmation(phone, name, date, time) {
+            let text = `Hola ${name} ✨, confirmamos tu cita en *AJ esencias* para la fecha *${date}* a las *${time}*. ¡Te esperamos para brindarte la mejor atención glamurosa!`;
+            const cleanPhone = phone.replace(/[^0-9]/g, '') || AJ_FIXED_WHATSAPP;
+            window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function renderDailyLogs() {
+            const tbody = document.getElementById('dailyLogTable');
+            tbody.innerHTML = '';
+
+            let grandTotalToday = 0;
+            let countQuotes = 0;
+
+            if (dailyLogs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-bistre/50 italic">Sin actividad registrada hoy.</td></tr>';
+            } else {
+                dailyLogs.forEach((log, idx) => {
+                    grandTotalToday += log.amount || 0;
+                    if (log.type === "Cotización Generada") countQuotes++;
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-beige-50 transition";
+                    tr.innerHTML = `
+                        <td class="p-3 font-semibold text-bistre">${log.time}</td>
+                        <td class="p-3"><span class="bg-gold-100 text-gold-800 px-2 py-0.5 rounded text-[10px] font-bold">${log.type}</span></td>
+                        <td class="p-3">${log.detail}</td>
+                        <td class="p-3 font-bold text-gold-700">RD$ ${(log.amount || 0).toLocaleString()}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteLogEntry(${idx})" class="text-red-500 hover:text-red-700 text-xs"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.getElementById('statTodayQuotes').innerText = countQuotes;
+            document.getElementById('statTodayTotalSales').innerText = `RD$ ${grandTotalToday.toLocaleString()}`;
+        }
+
+        function addNewLogEntry() {
+            const detail = prompt("Descripción de la actividad / venta:");
+            if (!detail) return;
+            const amount = parseFloat(prompt("Monto involucrado (RD$):")) || 0;
+
+            dailyLogs.unshift({
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                type: "Registro Manual",
+                detail,
+                amount
+            });
+            saveData();
+            renderDailyLogs();
+        }
+
+        function deleteLogEntry(idx) {
+            if (confirm("¿Deseas eliminar este registro?")) {
+                dailyLogs.splice(idx, 1);
+                saveData();
+                renderDailyLogs();
+            }
+        }
+
+        function renderPriceEditor() {
+            const tbody = document.getElementById('priceEditorTable');
+            tbody.innerHTML = '';
+
+            products.forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-beige-50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-gold-700 text-[11px] uppercase">${p.category}</td>
+                    <td class="p-3 font-bold text-bistre">${p.name}</td>
+                    <td class="p-3">
+                        <input type="number" value="${p.price}" onchange="updateProductPrice(${p.id}, this.value)" 
+                            class="w-28 p-1.5 border border-beige-300 rounded bg-white text-right font-bold text-bistre focus:border-gold-500 focus:outline-none">
+                    </td>
+                    <td class="p-3 text-center">
+                        <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 text-xs"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateProductPrice(id, newPrice) {
+            const prod = products.find(p => p.id === id);
+            if (prod) {
+                prod.price = parseFloat(newPrice) || 0;
+                saveData();
+                renderProductCatalog();
+                calculateTotal();
+            }
+        }
+
+        function deleteProduct(id) {
+            if (confirm("¿Estás segura de eliminar este producto del catálogo?")) {
+                products = products.filter(p => p.id !== id);
+                saveData();
+                renderPriceEditor();
+                renderProductCatalog();
+                calculateTotal();
+            }
+        }
+
+        function openAddProductModal() {
+            document.getElementById('addProductModal').classList.remove('hidden');
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('addProductModal').classList.add('hidden');
+        }
+
+        function saveNewProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('newProdName').value.trim();
+            const category = document.getElementById('newProdCategory').value;
+            const price = parseFloat(document.getElementById('newProdPrice').value) || 0;
+
+            const newId = Date.now();
+            products.push({ id: newId, category, name, price });
+
+            saveData();
+            renderPriceEditor();
+            renderProductCatalog();
+            closeAddProductModal();
+            alert("¡Nuevo producto guardado exitosamente!");
+        }
+    </script>
+</body>
+</html>
